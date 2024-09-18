@@ -1,0 +1,348 @@
+C51 COMPILER V6.12  LCD                                                                    06/13/2021 20:51:08 PAGE 1   
+
+
+C51 COMPILER V6.12, COMPILATION OF MODULE LCD
+OBJECT MODULE PLACED IN .\LCD.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\Downloads\C FILES\LCD.c DEBUG OBJECTEXTEND PRINT(.\LCD.lst) OBJECT(.\LCD
+                    -.obj) 
+
+stmt level    source
+
+   1          #include <reg51.h>
+   2          #define lcd P1           //Port 1 is connected to LCD.
+   3          
+   4          sbit rs = P3^0;          //RS is named to Pin 0 of Port 3.
+   5          sbit e = P3^2;           //Enable is named to Pin 2 of Port 3.
+   6          sbit R0 = P2^0;
+   7          sbit R1 = P2^1;
+   8          sbit R2 = P2^2;
+   9          sbit R3 = P2^3;
+  10          sbit C0 = P2^4;
+  11          sbit C1 = P2^5;
+  12          sbit C2 = P2^6;
+  13          int input,bit1,bit2,v;        //Global variables.
+  14          
+  15          void delay2(void);
+  16          void delay(void);
+  17          void cmd (char);
+  18          void display(char);
+  19          void string(char *);
+  20          void init(void);
+  21          void printInput();
+  22          void printMessage();
+  23          
+  24          void delay()                  //Delay Function (slow delay).
+  25          {
+  26   1      	unsigned char i,j,k;
+  27   1      	for(i=0;i<2;i++)
+  28   1      		for(j=0;j<255;j++)
+  29   1      	for(k=0;k<100;k++);
+  30   1      }
+  31          
+  32          void cmd (char c)             //Command Function.
+  33          {
+  34   1      	lcd = c;
+  35   1      	rs = 0;
+  36   1      	e = 1;
+  37   1      	delay();
+  38   1      	e = 0;
+  39   1      }
+  40          void display (char c)         //Display Function (displays a character).
+  41          {
+  42   1      	lcd=c;
+  43   1      	rs=1;                 //Command is given to LCD.
+  44   1                                    //Pulse Enable.
+  45   1      	e=1;                  //enable 1.
+  46   1      	delay();              //delay of 0.2 seconds.
+  47   1      	e=0;                  //enable 0.
+  48   1      }
+  49          void string(char *p)         //String Function (displays a string).
+  50          {
+  51   1      	while(*p)            //*p ==> pointer sends address of the string to the display of LCD.
+  52   1      	{
+  53   2      		display(*p++);
+  54   2      	}
+C51 COMPILER V6.12  LCD                                                                    06/13/2021 20:51:08 PAGE 2   
+
+  55   1      }
+  56          
+  57          void init(void)             //Initialization of Command Function.
+  58          {
+  59   1      	cmd(0x38);          //Function set (8 bit interface, 2 lines, 5*7 pixels).
+  60   1      	cmd(0x0e);          //Turn on visible underline cursor.
+  61   1      	cmd(0x01);          //Clear screan.
+  62   1      	cmd(0x06);          //Increment cursor (shift cursor to right).
+  63   1      	cmd(0x80);          //Force cursor to beginning ( 1st line).
+  64   1      }
+  65          
+  66          void main()
+  67          {
+  68   1      	start:
+  69   1      	P1 = 0x00;          //Port 1 pins initialized 0000h (0000 0000 0000 0000) for Output.
+  70   1      	P2 = 0xFF;          //Port 2 pins initialized FFFFh (1111 1111 1111 1111) for Input. 
+  71   1      	P3 = 0x00;          //Port 3 pins initialized 0000h (0000 0000 0000 0000) for Output.
+  72   1      	init();
+  73   1      	string("ACTION: ");
+  74   1      
+  75   1      	next:
+  76   1      	if (R0 == 1){
+  77   2      		if (C0 == 1)
+  78   2      		{	string("UPWARD");
+  79   3      			cmd(0xC0);
+  80   3      			string("NO OF TIMES:");
+  81   3      			printInput();
+  82   3      			goto start;
+  83   3      		}
+  84   2      		else if (C1 == 1)
+  85   2      		{	string("DOWNWARD");
+  86   3      			cmd(0xC0);
+  87   3      			string("NO OF TIMES: ");
+  88   3      			printInput();
+  89   3      			goto start;}
+  90   2      		else if (C2 == 1)
+  91   2      		{	string("FORWARD");
+  92   3      			cmd(0xC0);
+  93   3      			string("NO OF TIMES: ");
+  94   3      			printInput();
+  95   3      			goto start;}}
+  96   1      
+  97   1      	else if (R1 == 1){
+  98   2      		if (C0 == 1)
+  99   2      		{	string("REVERSE");
+ 100   3      			cmd(0xC0);
+ 101   3      			string("NO OF TIMES: ");
+ 102   3      			printInput();
+ 103   3      			goto start;}
+ 104   2      		else if (C1 == 1)
+ 105   2      		{	string("LEFT");
+ 106   3      			cmd(0xC0);
+ 107   3      			string("NO OF TIMES: ");
+ 108   3      			printInput();
+ 109   3      			goto start;}
+ 110   2      		else if (C2 == 1)
+ 111   2      		{	string("RIGHT");
+ 112   3      			cmd(0xC0);
+ 113   3      			string("NO OF TIMES: ");
+ 114   3      			printInput();
+ 115   3      			goto start;}}
+ 116   1      	
+C51 COMPILER V6.12  LCD                                                                    06/13/2021 20:51:08 PAGE 3   
+
+ 117   1      	else if (R2 == 1){
+ 118   2      		if (C0 == 1)
+ 119   2      		{
+ 120   3      			cmd(0x10);
+ 121   3      			string("GRIPCLOSE");
+ 122   3      			cmd(0xC0);
+ 123   3      			string("NO OF TIMES: ");
+ 124   3      			printInput();
+ 125   3      			goto start;}
+ 126   2      		else if (C1 == 1)
+ 127   2      		{	string("GRIPOPEN");
+ 128   3      			cmd(0xC0);
+ 129   3      			string("NO OF TIMES: ");
+ 130   3      			printInput();
+ 131   3      			goto start;}
+ 132   2      		}
+ 133   1      
+ 134   1      	goto next;
+ 135   1      }
+ 136          
+ 137          void printInput()          //Prints the distance units (number of rotations).
+ 138          {
+ 139   1      	int s = 0;
+ 140   1      	next2:
+ 141   1      	if (R0 == 1){
+ 142   2      		if (C0 == 1)
+ 143   2      		{	display('1');
+ 144   3      			delay();
+ 145   3      			s++;
+ 146   3      			if (s==1){
+ 147   4      				bit1 = 1;}
+ 148   3      			else if (s==2){
+ 149   4      				bit2 =1;
+ 150   4      				input = (bit1 * 10) + bit2;
+ 151   4      				printMessage();
+ 152   4      				return;
+ 153   4      		}	}
+ 154   2      		else if (C1 == 1)
+ 155   2      		{	display('2');
+ 156   3      			delay();
+ 157   3      			s++;
+ 158   3      			if (s==1){
+ 159   4      				bit1 = 2;}
+ 160   3      			else if (s==2){
+ 161   4      				bit2 = 2;
+ 162   4      				input = (bit1 * 10) + bit2;
+ 163   4      				printMessage();
+ 164   4      				return;}}
+ 165   2      		else if (C2 == 1)
+ 166   2      		{	display('3');
+ 167   3      			delay();
+ 168   3      			s++;
+ 169   3      			if (s==1){
+ 170   4      				bit1 = 3;}
+ 171   3      			else if (s==2){
+ 172   4      				bit2 = 3;
+ 173   4      				input = (bit1 * 10) + bit2;
+ 174   4      				printMessage();
+ 175   4      				return;}}}
+ 176   1      
+ 177   1      	else if (R1 == 1){
+ 178   2      		if (C0 == 1)
+C51 COMPILER V6.12  LCD                                                                    06/13/2021 20:51:08 PAGE 4   
+
+ 179   2      		{	display('4');
+ 180   3      			delay();
+ 181   3      			s++;
+ 182   3      			if (s==1){
+ 183   4      				bit1 = 4;}
+ 184   3      			else if (s==2){
+ 185   4      				bit2 = 4;
+ 186   4      				input = (bit1 * 10) + bit2;
+ 187   4      				printMessage();
+ 188   4      				return;}}
+ 189   2      		else if (C1 == 1)
+ 190   2      		{	display('5');
+ 191   3      			delay();
+ 192   3      			s++;
+ 193   3      			if (s==1){
+ 194   4      				bit1 = 5;}
+ 195   3      			else if (s==2){
+ 196   4      				bit2 = 5;
+ 197   4      				input = (bit1 * 10) + bit2;
+ 198   4      				printMessage();
+ 199   4      				return;}}
+ 200   2      		else if (C2 == 1)
+ 201   2      		{	display('6');
+ 202   3      			delay();
+ 203   3      			s++;
+ 204   3      			if (s==1){
+ 205   4      				bit1 = 6;}
+ 206   3      			else if (s==2){
+ 207   4      				bit2 = 6;
+ 208   4      				input = (bit1 * 10) + bit2;
+ 209   4      				printMessage();
+ 210   4      				return;}}}
+ 211   1      	
+ 212   1      	else if (R2 == 1){
+ 213   2      		if (C0 == 1)
+ 214   2      		{
+ 215   3      			display('7');
+ 216   3      			delay();
+ 217   3      			s++;
+ 218   3      			if (s==1){
+ 219   4      				bit1 = 7;}
+ 220   3      			else if (s==2){
+ 221   4      				bit2 = 7;
+ 222   4      				input = (bit1 * 10) + bit2;
+ 223   4      				printMessage();
+ 224   4      				return;}}
+ 225   2      		else if (C1 == 1)
+ 226   2      		{	display('8');
+ 227   3      			delay();
+ 228   3      			s++;
+ 229   3      			if (s==1){
+ 230   4      				bit1 = 8;}
+ 231   3      			else if (s==2){
+ 232   4      				bit2 = 8;
+ 233   4      				input = (bit1*10) + bit2;
+ 234   4      				printMessage();
+ 235   4      				return;}}
+ 236   2      		else if (C2 == 1)
+ 237   2      		{	display('9');
+ 238   3      			delay();
+ 239   3      			s++;
+ 240   3      			if (s==1){
+C51 COMPILER V6.12  LCD                                                                    06/13/2021 20:51:08 PAGE 5   
+
+ 241   4      				bit1 = 9;}
+ 242   3      			else if (s==2){
+ 243   4      			bit2 = 9;
+ 244   4      			input = (bit1 * 10) + bit2;
+ 245   4      			printMessage();
+ 246   4      			return;}}}
+ 247   1      
+ 248   1      	else if (R3 == 1){
+ 249   2      		if (C1 == 1)
+ 250   2      		{	display('0');
+ 251   3      			delay();
+ 252   3      			s++;
+ 253   3      			if (s==1){
+ 254   4      				bit1 = 0;}
+ 255   3      			else if (s==2){
+ 256   4      				bit2 = 0;
+ 257   4      				input = (bit1 * 10) + bit2;
+ 258   4      				printMessage();
+ 259   4      				return;}}
+ 260   2      	}
+ 261   1      	goto next2;
+ 262   1      }
+ 263          
+ 264          void printMessage(){          //Prints message "ROBARM IS MOVING" "PRESS 9 TO STOP".
+ 265   1      	cmd(0x01);
+ 266   1      	cmd(0x80);
+ 267   1      	string("ROBARM IS MOVING");
+ 268   1      	cmd(0xC0);
+ 269   1      	string("PRESS 9 TO STOP");
+ 270   1      	v = 0;
+ 271   1      	msg:
+ 272   1      		if (input < 10){
+ 273   2      			delay2();
+ 274   2      			delay2();}
+ 275   1      		else if (input < 20){
+ 276   2      			delay2();
+ 277   2      			delay2();
+ 278   2      			delay2();}
+ 279   1      		else if (input <30){
+ 280   2      			delay2();
+ 281   2      			delay2();
+ 282   2      			delay2();
+ 283   2      			delay2();}
+ 284   1      		else{
+ 285   2      			delay2();
+ 286   2      			delay2();
+ 287   2      			delay2();
+ 288   2      			delay2();
+ 289   2      			delay2();}
+ 290   1      		if (R2 == 1)
+ 291   1      		{
+ 292   2      			if(C2 == 1)
+ 293   2      			{
+ 294   3      				return;
+ 295   3      			}
+ 296   2      			else{
+ 297   3      			v++;
+ 298   3      			goto msg;}
+ 299   2      		}
+ 300   1      		else if (v == input){
+ 301   2      			return;
+ 302   2      		}
+C51 COMPILER V6.12  LCD                                                                    06/13/2021 20:51:08 PAGE 6   
+
+ 303   1      		else{
+ 304   2      			v++;
+ 305   2      			goto msg;}
+ 306   1      }
+ 307          
+ 308          void delay2(void)         //Delay Fucntion (fast delay).
+ 309          {
+ 310   1      	unsigned char i,j,k;
+ 311   1      	for(i=0;i<2;i++)
+ 312   1      		for(j=0;j<255;j++)
+ 313   1      	for(k=0;k<255;k++);
+ 314   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1081    ----
+   CONSTANT SIZE    =    131    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      8       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
