@@ -30,7 +30,9 @@ Our project consists of 3 main parts:
 • Firstly, we started our working on the servo motor motion to explain the 
 movement of arms in different directions (like anti-clockwise for 
 upward).
+
 • Then we moved to Keypad control for our servo motors.
+
 • And lastly, we designed LCD interfacing for our locomotion and 
 movement units of arms.
 
@@ -46,6 +48,8 @@ Motors work properly and show the locomotion as displayed on LCD.
 ## Recommended Future Work
 
 The things that could have been added were:
+
 • Using the cartesian coordinates (x, y, z) input from user to define the 
 locomotion of Robotic Arm.
+
 • Saving the movement and the automatic locomotion.
